@@ -32,9 +32,8 @@ X_train, y_train, encoder, lb = process_data(
 # Proces the test data with the process_data function.
 labelBinarizer = LabelBinarizer()
 X_val, y_val, encoder, lb = process_data(
-    X_val, categorical_features=cat_features, label="salary", training=False, encoder, labelBinarizer
+    X_val, categorical_features=cat_features, label="salary", training=False, encoder=encoder, lb=labelBinarizer
 )
-
 # Train and save a model.
 model = train_model(X_train, y_train)
 
