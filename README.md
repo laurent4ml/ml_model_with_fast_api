@@ -18,10 +18,18 @@ pip install wandb
 
 export WANDB_API_KEY=<api_key>
 
-python src/model_build/data_preparation/wandb_upload.py --file="./data/census.csv" --artifact_name census_project --artifact_type=dataset --artifact_description="census dataset for ml project"
+python src/model_build/data_preparation/wandb_upload.py --file="./data/census.csv" --artifact_name census --artifact_type=dataset --artifact_description="census dataset for ml project"
 ```
 
-This will create anew project in WandB and store census.csv as an artifact
+This will create a new project in WandB and store census.csv as an artifact
+
+## Step 3: Train Test Split
+to create the train and test data
+```
+python src/model_build/data_split/train_test_split.py --input_artifact="laurent4ml/census-classification/census:v0" --artifact_root="census" --artifact_type=dataset --test_size=0.20
+```
+
+This will store two datasets in WandB and in the "data" local directory. One for trainning and one for validation.
 
 ## Github Actions
 
