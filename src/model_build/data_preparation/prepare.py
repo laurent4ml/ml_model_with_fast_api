@@ -2,6 +2,7 @@ import os
 import requests
 import logging
 import pandas as pd
+import numpy as np
 
 logging.basicConfig(level=logging.INFO)
 
@@ -44,8 +45,12 @@ def prepare_data(path='data'):
         'income',
     ]
 
-    data = pd.read_csv('data/adult.data', names=names)
+    data = pd.read_csv('data/adult.data', names=names, skipinitialspace = True)
+    logging.info("data.replace('?', np.nan)")
+    for col in names:
+        data[col] = data[col].apply(lambda x: np.nan if x == '?' else x)
 
+    data.dropna(inplace=True)
     # SAVE DATASET INTO CSV FILE
     logging.info("SAVE DATASET INTO CSV FILE")
     output_folder = os.path.join(path, "census.csv")
