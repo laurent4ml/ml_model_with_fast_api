@@ -31,6 +31,13 @@ python src/model_build/data_split/train_test_split.py --input_artifact="laurent4
 
 This will store two datasets in WandB and in the "data" local directory. One for trainning and one for validation.
 
+## Step 4: Model Training
+train model
+```
+python src/train_model.py --artifact_training="laurent4ml/census-classification/census_train.csv:v0" --project_name="census-classification" --model_file="lr_model.joblib"
+```
+This step trains the model and store the models on local
+
 ## Github Actions
 
 We will use Github Actions to:
