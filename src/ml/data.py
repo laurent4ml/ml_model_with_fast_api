@@ -3,9 +3,14 @@ from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 
 
 def process_data(
-    X, categorical_features=[], label=None, training=True, encoder=None, lb=None
+    X,
+    categorical_features=[],
+    label=None,
+    training=True,
+    encoder=None,
+    label_binarizer=None,
 ):
-    """ Process the data used in the machine learning pipeline.
+    """Process the data used in the machine learning pipeline.
 
     Processes the data using one hot encoding for the categorical features and a
     label binarizer for the labels. This can be used in either training or
@@ -27,7 +32,7 @@ def process_data(
         Indicator if training mode or inference/validation mode.
     encoder : sklearn.preprocessing._encoders.OneHotEncoder
         Trained sklearn OneHotEncoder, only used if training=False.
-    lb : sklearn.preprocessing._label.LabelBinarizer
+    label_binarizer : sklearn.preprocessing._label.LabelBinarizer
         Trained sklearn LabelBinarizer, only used if training=False.
 
     Returns
@@ -39,7 +44,7 @@ def process_data(
     encoder : sklearn.preprocessing._encoders.OneHotEncoder
         Trained OneHotEncoder if training is True, otherwise returns the encoder passed
         in.
-    lb : sklearn.preprocessing._label.LabelBinarizer
+    label_binarizer : sklearn.preprocessing._label.LabelBinarizer
         Trained LabelBinarizer if training is True, otherwise returns the binarizer
         passed in.
     """
@@ -50,21 +55,21 @@ def process_data(
     else:
         y = np.array([])
 
-    X_categorical = X[categorical_features].values
-    X_continuous = X.drop(*[categorical_features], axis=1)
+    x_categorical = X[categorical_features].values
+    x_continuous = X.drop(*[categorical_features], axis=1)
 
     if training is True:
         encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
-        lb = LabelBinarizer()
-        X_categorical = encoder.fit_transform(X_categorical)
-        y = lb.fit_transform(y.values).ravel()
+        label_binarizer = LabelBinarizer()
+        x_categorical = encoder.fit_transform(x_categorical)
+        y = label_binarizer.fit_transform(y.values).ravel()
     else:
-        X_categorical = encoder.transform(X_categorical)
+        x_categorical = encoder.transform(x_categorical)
         try:
-            y = lb.transform(y.values).ravel()
+            y = label_binarizer.transform(y.values).ravel()
         # Catch the case where y is None because we're doing inference.
         except AttributeError:
             pass
 
-    X = np.concatenate([X_continuous, X_categorical], axis=1)
-    return X, y, encoder, lb
+    X = np.concatenate([x_continuous, x_categorical], axis=1)
+    return X, y, encoder, label_binarizer

@@ -1,7 +1,29 @@
-# Building a MLOps Pipeline with Github, Github Actions and a Cloud Service Provider
+# Census Classifier
+
+## Goal
+Build a MLOps Pipeline using Github Actions and deploy it to a Cloud Service Provider
 
 ## Project Setup
-This multiple step project is using python version 3. Setup is done through command line instructions.
+This multiple step project is using python version 3.
+
+## Using CLI
+Running all steps through CLI
+```
+bash deploy/jobs/workloads.sh
+```
+workloads.sh file content:
+```
+# All Steps are defined below
+python src/model_build/prepare_data/prepare.py            # prepare dataset
+python src/model_build/data_preparation/wandb_upload.py   # track dataset
+python src/model_build/data_split/train_test_split.py     # split dataset
+pytest --dataset-loc=$DATASET_LOC tests/data ...          # test data
+python -m pytest tests/code --verbose --disable-warnings  # test code
+python src/train_model.py --project-name "census-cl" ...  # train model
+python src/model_deploy/evaluate.py --run-id $RUN_ID ...  # evaluate model
+pytest --run-id=$RUN_ID tests/model ...                   # test model
+python src/model_deploy/serve.py --run_id $RUN_ID         # serve model
+```
 
 ## Step 1: Preparing Data
 to load the data set:
@@ -34,9 +56,16 @@ This will store two datasets in WandB and in the "data" local directory. One for
 ## Step 4: Model Training
 train model
 ```
-python src/train_model.py --artifact_training="laurent4ml/census-classification/census_train.csv:v0" --project_name="census-classification" --model_file="lr_model.joblib"
+python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_0.joblib"
 ```
 This step trains the model and store the models on local
+
+## Step 5: Evaluate Model
+evaluate model
+```
+python src/model_deploy/evaluate.py --project_name="census-classification" --model_file="lr_model_0.joblib"
+```
+This step returns metrics about the model performances
 
 ## Github Actions
 

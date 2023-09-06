@@ -1,5 +1,7 @@
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
@@ -17,9 +19,11 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
-    lr = LogisticRegression(max_iter=1000, random_state=23)
-    lr.fit(X_train, y_train)
-    return lr
+    pipe = make_pipeline(
+        StandardScaler(), LogisticRegression(max_iter=1000, random_state=23)
+    )
+    pipe.fit(X_train, y_train)
+    return pipe
 
 
 def compute_model_metrics(y, preds):
@@ -45,7 +49,7 @@ def compute_model_metrics(y, preds):
 
 
 def inference(model, X):
-    """ Run model inferences and return the predictions.
+    """Run model inferences and return the predictions.
 
     Inputs
     ------

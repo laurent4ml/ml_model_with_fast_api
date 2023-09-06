@@ -6,21 +6,27 @@ import wandb
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
+
 def go(args):
 
     logger.info(f"Starting uploading {args.file} ...")
 
-    with wandb.init(project="census-classification", notes="training census dataset", tags=["training"], job_type="download_data") as run:
-        with open(args.file, 'r') as fp:
+    with wandb.init(
+        project="census-classification",
+        notes="training census dataset",
+        tags=["training"],
+        job_type="download_data",
+    ) as run:
+        with open(args.file, "r") as fp:
 
             logger.info("Creating artifact")
             artifact = wandb.Artifact(
                 name=args.artifact_name,
                 type=args.artifact_type,
                 description=args.artifact_description,
-                metadata={'original_file': args.file}
+                metadata={"original_file": args.file},
             )
-            artifact.add_file(fp.name, name='census_clean')
+            artifact.add_file(fp.name, name="census_clean")
 
             logger.info("Logging artifact")
             run.log_artifact(artifact)
@@ -28,7 +34,8 @@ def go(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Download a file and upload it as an artifact to W&B", fromfile_prefix_chars="@"
+        description="Download a file and upload it as an artifact to W&B",
+        fromfile_prefix_chars="@",
     )
 
     parser.add_argument(
