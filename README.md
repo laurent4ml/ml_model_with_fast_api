@@ -53,14 +53,22 @@ python src/model_build/data_split/train_test_split.py --input_artifact="laurent4
 
 This will store two datasets in WandB and in the "data" local directory. One for trainning and one for validation.
 
-## Step 4: Model Training
+## Step 4: Test Data
+Data testing of 3 csv files
+```
+pytest tests -vv --input_artifact laurent4ml/census-classification/census_project:latest
+pytest tests -vv --input_artifact laurent4ml/census-classification/census_train.csv:v0
+pytest tests -vv --input_artifact laurent4ml/census-classification/census_test.csv:v0
+```
+
+## Step 5: Model Training
 train model
 ```
 python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_0.joblib"
 ```
 This step trains the model and store the models on local
 
-## Step 5: Evaluate Model
+## Step 6: Evaluate Model
 evaluate model
 ```
 python src/model_deploy/evaluate.py --project_name="census-classification" --model_file="lr_model_0.joblib"
