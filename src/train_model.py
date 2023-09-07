@@ -1,11 +1,11 @@
 import logging
 import pandas as pd
 import wandb
-import joblib
+from joblib import dump
 import argparse
 import os
 from ml.data import process_data
-from ml.model import train_model, compute_model_metrics
+from ml.model import train_model, compute_model_metrics, inference
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -59,6 +59,9 @@ def run_training_steps(args):
     x_train, y_train, encoder, label_binarizer = process_data(
         training_data, categorical_features=cat_features, label="income", training=True
     )
+    logger.info("x_train.shape:")
+    logger.info(x_train.shape)
+    logger.info(f"Type of x_train: {type(x_train)}")
     logger.info("Encoder Categories:")
     for enc_cat in encoder.categories_:
         logger.info(enc_cat)
@@ -83,11 +86,11 @@ def run_training_steps(args):
     # save model
     logger.info("Saving Model")
     model_path = os.path.join("model", args.model_file)
-    joblib.dump(model, model_path)
+    dump(model, model_path)
 
     # run predictions
-    logger.info("Running predictions")
-    preds = model.predict(x_test)
+    logger.info(f"Running predictions for model: {model_path}")
+    preds = inference(model_path, x_test)
 
     ## evaluate model
     logger.info("Evaluating Model")
@@ -96,6 +99,7 @@ def run_training_steps(args):
     logger.info(f"precision: {precision}")
     logger.info(f"recall: {recall}")
     logger.info(f"fbeta: {fbeta}")
+    run.log({"precision": precision, "recall": recall, "fbeta": fbeta})
 
 
 if __name__ == "__main__":
