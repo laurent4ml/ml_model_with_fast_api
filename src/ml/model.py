@@ -72,11 +72,11 @@ def inference(model, X):
     ------
     model : sklearn.linear_model._base.LinearRegression
         Trained machine learning model.
-    X : np.array
+    X : np.ndarray
         Data used for prediction.
     Returns
     -------
-    preds : np.array
+    preds : np.ndarray
         Predictions from the model.
     """
     try:

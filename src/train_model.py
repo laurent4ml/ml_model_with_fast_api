@@ -1,4 +1,5 @@
 import logging
+import json
 import pandas as pd
 import wandb
 from joblib import dump
@@ -6,9 +7,20 @@ import argparse
 import os
 from ml.data import process_data
 from ml.model import train_model, compute_model_metrics, inference
+from model_evaluation.evaluate import get_slice_stats_per_feature, get_slice_metrics
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
+
+
+def walkmetrics(data):
+    for feature, results in data.items():
+        logger.info("feature: {0} - {1}".format(feature, results))
+        if isinstance(results, dict):
+            for slice, result in results.items():
+                logger.info("{0} - {1} - {2}".format(feature, slice, result))
+        else:
+            logger.info("{0} : {1}".format(feature, results))
 
 
 def run_training_steps(args):
@@ -32,6 +44,9 @@ def run_training_steps(args):
 
     logger.info("Uploading training data")
     training_data = pd.read_csv(artifact_training_path)
+
+    for t_col in training_data.columns:
+        logger.info("Columns: {}".format(t_col))
 
     logger.info("Downloading test artifact from WandB")
     artifact_test_name = (
@@ -68,7 +83,7 @@ def run_training_steps(args):
     logger.info("Label Binarizer Classes:")
     logger.info(label_binarizer.classes_)
 
-    # Process the test data with the process_data function.
+    # Process test data with the process_data function.
     logger.info("Processing test data")
     x_test, y_test, _, _ = process_data(
         test_data,
@@ -92,14 +107,37 @@ def run_training_steps(args):
     logger.info(f"Running predictions for model: {model_path}")
     preds = inference(model_path, x_test)
 
-    ## evaluate model
-    logger.info("Evaluating Model")
+    ## evaluate overall model performance
+    logger.info("Evaluating overall model performance")
     precision, recall, fbeta = compute_model_metrics(y_test, preds)
 
     logger.info(f"precision: {precision}")
     logger.info(f"recall: {recall}")
     logger.info(f"fbeta: {fbeta}")
     run.log({"precision": precision, "recall": recall, "fbeta": fbeta})
+
+    ## log descriptive stats per slice for the education feature
+    logger.info("Log descriptive stats for education on slice of data")
+    class_slices = get_slice_stats_per_feature(training_data, "education-num")
+    logger.info(class_slices)
+    for slice in class_slices:
+        logger.info(f"slice: {slice}")
+        logger.info(f"- mean: {class_slices[slice]['mean']}")
+        logger.info(f"- std dev: {class_slices[slice]['stddev']}")
+
+    ## log descriptive stats per slice for the age feature
+    logger.info("Log descriptive stats for age on slice of data")
+    class_slices = get_slice_stats_per_feature(training_data, "age")
+    logger.info(class_slices)
+    for slice in class_slices:
+        logger.info(f"slice: {slice}")
+        logger.info(f"- mean: {class_slices[slice]['mean']}")
+        logger.info(f"- std dev: {class_slices[slice]['stddev']}")
+
+    ## performance metrics per slice for the categorical features
+    logger.info("performance metrics per slice for the categorical features")
+    slice_metrics = get_slice_metrics(y_test, preds, test_data, cat_features)
+    walkmetrics(slice_metrics)
 
 
 if __name__ == "__main__":
