@@ -76,7 +76,7 @@ This step trains the model and store the models on local
 ## Step 7: Evaluate Model
 evaluate model
 ```
-python src/model_deploy/evaluate.py --project_name="census-classification" --model_file="lr_model_0.joblib"
+python src/evaluate_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_2.joblib""
 ```
 This step returns metrics about the model performances
 
