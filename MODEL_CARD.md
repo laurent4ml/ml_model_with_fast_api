@@ -14,5 +14,11 @@ recall: 0.6189542483660131
 fbeta: 0.6815401223461677
 We also analysed the same metrics on slices of data for each categorical features.
 
-## Data
+## Training Data
 The model is trained on the UCI Census Income Dataset. (https://archive.ics.uci.edu/dataset/20/census+income).
+
+## Evaluation Data
+20% of the training dataset is used for model testing
+
+## Caveats and Recommendations
+The data contains biases and should be considered only for training purposes.
