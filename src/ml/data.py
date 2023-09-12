@@ -1,5 +1,9 @@
 import numpy as np
+import logging
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logger = logging.getLogger()
 
 
 def process_data(
@@ -48,7 +52,7 @@ def process_data(
         Trained LabelBinarizer if training is True, otherwise returns the binarizer
         passed in.
     """
-
+    logging.info("process_data - start")
     if label is not None:
         y = X[label]
         X = X.drop([label], axis=1)
@@ -56,8 +60,9 @@ def process_data(
         y = np.array([])
 
     x_categorical = X[categorical_features].values
+    logging.info(f"process_data - x_categorical.shape: {x_categorical.shape}")
     x_continuous = X.drop(*[categorical_features], axis=1)
-
+    logging.info(f"process_data - x_continuous.shape: {x_continuous.shape}")
     if training is True:
         encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
         label_binarizer = LabelBinarizer()
@@ -72,4 +77,5 @@ def process_data(
             pass
 
     X = np.concatenate([x_continuous, x_categorical], axis=1)
+    logging.info(f"process_data - X.shape: {X.shape}")
     return X, y, encoder, label_binarizer

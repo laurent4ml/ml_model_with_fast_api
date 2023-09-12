@@ -33,19 +33,6 @@ def run_training_steps(args):
     logger.info("Uploading training data")
     training_data = pd.read_csv(artifact_training_path)
 
-    for t_col in training_data.columns:
-        logger.info("Columns: {}".format(t_col))
-
-    logger.info("Downloading test artifact from WandB")
-    artifact_test_name = (
-        f"laurent4ml/{args.project_name}/{args.artifact_root}_test.csv:latest"
-    )
-    artifact_test = run.use_artifact(artifact_test_name)
-    artifact_test_path = artifact_test.file()
-
-    logger.info("Uploading test data")
-    test_data = pd.read_csv(artifact_test_path)
-
     # categorical features
     cat_features = [
         "workclass",
@@ -59,7 +46,7 @@ def run_training_steps(args):
     ]
 
     logger.info("Processing training data")
-    x_train, y_train, _, _ = process_data(
+    x_train, y_train, encoder, label_binarizer = process_data(
         training_data, categorical_features=cat_features, label="income", training=True
     )
 
@@ -71,6 +58,16 @@ def run_training_steps(args):
     logger.info("Saving Model")
     model_path = os.path.join("model", args.model_file)
     dump(model, model_path)
+
+    # save encoder
+    logger.info("Saving Encoder")
+    encoder_path = os.path.join("model", "encoder.joblib")
+    dump(encoder, encoder_path)
+
+    # save label binarizer
+    logger.info("Saving Label Binarizer")
+    label_binarizer_path = os.path.join("model", "label_binarizer.joblib")
+    dump(label_binarizer, label_binarizer_path)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
 import logging
+import pandas as pd
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from joblib import load
 import numpy as np
 
@@ -79,15 +81,20 @@ def inference(model, X):
     preds : np.ndarray
         Predictions from the model.
     """
+    assert isinstance(X, np.ndarray), "Features must be a np.ndarray"
     try:
         pipeline = load(model)
-    except:
-        return 0
+    except ValueError as msg:
+        return msg
+    assert isinstance(pipeline, Pipeline), "model must be a Pipeline object"
     lr_model = pipeline[1]
-    logger.info(f"X.shape[1]: {X.shape[1]}")
-    logger.info(f"type of lr_model: {type(lr_model)}")
-    logger.info(f"lr_model.coef_: {lr_model.coef_}")
-    logger.info(f"len(lr_model.coef_[0]): {len(lr_model.coef_[0])}")
+    logger.info(f"inference - X.shape[1]: {X.shape[1]}")
+    logger.info(X.dtype.names)
+    logger.info(f"inference - type of lr_model: {type(lr_model)}")
+    logger.info(f"inference - lr_model.coef_: {lr_model.coef_}")
+    logger.info(f"inference - len(lr_model.coef_[0]): {len(lr_model.coef_[0])}")
     assert len(lr_model.coef_[0]) == X.shape[1], "Data dimension incorrect"
+
     preds = pipeline.predict(X)
+
     return preds
