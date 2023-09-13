@@ -36,6 +36,7 @@ def test_post_result_over_50k():
     )
     r = client.post("/predict", data=data)
     assert r.json() == {"results": ">50K"}
+    assert r.status_code == 200
 
 
 def test_post_result_under_50k():
@@ -60,3 +61,4 @@ def test_post_result_under_50k():
     )
     r = client.post("/predict", data=data)
     assert r.json() == {"results": "<50K"}
+    assert r.status_code == 200
