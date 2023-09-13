@@ -1,8 +1,7 @@
 import logging
 import numpy as np
 import pandas as pd
-from sklearn.metrics import precision_recall_fscore_support
-from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
+from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
 import wandb
 import argparse
 import os
@@ -195,6 +194,11 @@ def run_evaluate_steps(args):
     logger.info("performance metrics per slice for the categorical features")
     slice_metrics = get_slice_metrics(y_test, preds, test_data, cat_features)
     walkmetrics(slice_metrics, run)
+
+    ## calculate auc
+    auc = roc_auc_score(y_test, preds)
+    logger.info(f"auc: {auc}")
+    run.log({"auc": auc})
 
 
 if __name__ == "__main__":
