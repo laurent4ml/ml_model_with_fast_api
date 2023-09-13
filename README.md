@@ -48,7 +48,7 @@ This will create a new project in WandB and store census.csv as an artifact
 ## Step 3: Train Test Split
 to create the train and test data
 ```
-python src/model_build/data_split/train_test_split.py --input_artifact="laurent4ml/census-classification/census:v0" --artifact_root="census" --artifact_type=dataset --test_size=0.20
+python src/model_build/data_split/train_test_split.py --input_artifact="laurent4ml/census-classification/census_project:v0" --artifact_root="census" --artifact_type=dataset --test_size=0.20
 ```
 
 This will store two datasets in WandB and in the "data" local directory. One for trainning and one for validation.
@@ -63,22 +63,86 @@ pytest src/test/data -vv --input_artifact laurent4ml/census-classification/censu
 
 ## Step 5: Test Model
 ```
-pytest src/ml -vv --input_artifact laurent4ml/census-classification/census_train.csv:v0
+pytest src/ml -vv --input_artifact laurent4ml/census-classification/census_train.csv:latest
 ```
 
 ## Step 6: Model Training
 train model
 ```
-python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_0.joblib"
+python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_5.joblib"
 ```
 This step trains the model and store the models on local
 
 ## Step 7: Evaluate Model
 evaluate model
 ```
-python src/evaluate_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_2.joblib""
+python src/evaluate_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_5.joblib""
 ```
 This step returns metrics about the model performances
+
+## Step 8: Rest API using FastAPI
+Install app on local machine
+```
+pip install fastapi
+pip install "uvicorn[standard]"
+uvicorn main:app --reload
+```
+
+call the inference endpoint from Postman
+url: POST http://127.0.0.1:8000/predict
+
+Test #1:
+body:
+```
+{
+    "workclass": "Never-worked",
+    "education": "Preschool",
+    "maritalstatus": "Divorced",
+    "occupation": "Priv-house-serv",
+    "relationship": "Wife",
+    "race": "White",
+    "sex": "Female",
+    "nativecountry": "United-States",
+    "capitalgain": 0,
+    "capitalloss": 10000,
+    "fnlwgt": 0,
+    "age": 22,
+    "educationnum": 1,
+    "hoursperweek": 0
+}
+```
+response:
+```
+{
+    "results": "<50K"
+}
+```
+
+Test #2:
+```
+{
+    "workclass": "Private",
+    "education": "Doctorate",
+    "maritalstatus": "Divorced",
+    "occupation": "Exec-managerial",
+    "relationship": "Husband",
+    "race": "White",
+    "sex": "Male",
+    "nativecountry": "United-States",
+    "capitalgain": 1000000,
+    "capitalloss": 10000,
+    "fnlwgt": 0,
+    "age": 52,
+    "educationnum": 16,
+    "hoursperweek": 70
+}
+```
+response:
+```
+{
+    "results": ">50K"
+}
+```
 
 ## Github Actions
 

@@ -17,6 +17,23 @@ We also analysed the same metrics on slices of data for each categorical feature
 ## Training Data
 The model is trained on the UCI Census Income Dataset. (https://archive.ics.uci.edu/dataset/20/census+income).
 
+## Dataset Columns
+        "age"
+        "workclass"
+        "fnlwgt"
+        "education"
+        "education-num"
+        "marital-status"
+        "occupation"
+        "relationship"
+        "race"
+        "sex"
+        "capital-gain"
+        "capital-loss"
+        "hours-per-week"
+        "native-country"
+        "income"
+
 ## Evaluation Data
 20% of the training dataset is used for model testing
 

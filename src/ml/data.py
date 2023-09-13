@@ -61,14 +61,20 @@ def process_data(
 
     x_categorical = X[categorical_features].values
     logging.info(f"process_data - x_categorical.shape: {x_categorical.shape}")
+    logging.info(f"process_data - x_categorical: {x_categorical}")
     x_continuous = X.drop(*[categorical_features], axis=1)
     logging.info(f"process_data - x_continuous.shape: {x_continuous.shape}")
+    logging.info(f"process_data - x_continuous: {x_continuous}")
     if training is True:
         encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
         label_binarizer = LabelBinarizer()
         x_categorical = encoder.fit_transform(x_categorical)
+        logging.info(f"process_data - encoder_categories: {encoder.categories_}")
         y = label_binarizer.fit_transform(y.values).ravel()
     else:
+        # encoder.transform
+        # Input: Xarray-like of shape (n_samples, n_features)
+        # Output: X_out{ndarray, sparse matrix} of shape (n_samples, n_encoded_features)
         x_categorical = encoder.transform(x_categorical)
         try:
             y = label_binarizer.transform(y.values).ravel()

@@ -1,11 +1,13 @@
 from enum import Enum, IntEnum
 import logging
+import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ValidationError
 import pandas as pd
 from joblib import load
 from src.ml.model import inference
-from src.ml.data import process_data
+
+# from src.ml.data import process_data
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -115,11 +117,11 @@ class RelationshipEnum(str, Enum):
 
 
 class RaceEnum(str, Enum):
-    wife = "White"
-    ownchild = "Asian-Pac-Islander"
-    husband = "Amer-Indian-Eskimo"
-    notinfamily = "Other"
-    otherrelative = "Black"
+    white = "White"
+    asianpacislander = "Asian-Pac-Islander"
+    amerindianeskimo = "Amer-Indian-Eskimo"
+    other = "Other"
+    black = "Black"
 
 
 class SexEnum(str, Enum):
@@ -174,16 +176,16 @@ class NativeCountryEnum(str, Enum):
 # Declare the data object with its components and their type.
 class Inference(BaseModel):
     age: int = None
-    workclass: WorkclassEnum = None
+    workclass: str = None
     fnlwgt: int = None
-    educationnum: EducationnumEnum = None
-    education: EducationEnum = None
-    maritalstatus: MaritalStatusEnum = None
-    occupation: OccupationEnum = None
-    relationship: RelationshipEnum = None
-    race: RaceEnum = None
-    sex: SexEnum = None
-    nativecountry: NativeCountryEnum = None
+    educationnum: int = None
+    education: str = None
+    maritalstatus: str = None
+    occupation: str = None
+    relationship: str = None
+    race: str = None
+    sex: str = None
+    nativecountry: str = None
     capitalgain: int = None
     capitalloss: int = None
     hoursperweek: int = None
@@ -198,7 +200,7 @@ async def say_hello():
 @app.post("/predict/")
 async def _predict(input: Inference):
 
-    inputDF = pd.DataFrame(
+    X = pd.DataFrame(
         {
             "workclass": str(input.workclass),
             "education": str(input.education),
@@ -214,30 +216,44 @@ async def _predict(input: Inference):
             "age": input.age,
             "education-num": input.educationnum,
             "hours-per-week": input.hoursperweek,
-            "income": 0,
+            # "income": 0,
         },
         index=[0],
     )
 
     try:
-        encoder = load("./model/encoder.joblib")
-        label_binarizer = load("./model/label_binarizer.joblib")
+        onehotencoder = load("./model/encoder.joblib")
+        # label_binarizer = load("./model/label_binarizer.joblib")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Model not found: {e}")
 
     logger.info("Processing training data")
-    try:
-        X, _, _, _ = process_data(
-            inputDF,
-            categorical_features=cat_features,
-            training=False,
-            encoder=encoder,
-            label_binarizer=label_binarizer,
-        )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Process data error: {e}")
+    # try:
+    #     X, _, _, _ = process_data(
+    #         inputDF, # pd.DataFrame
+    #         categorical_features=cat_features,
+    #         training=False,
+    #         encoder=encoder,
+    #         label_binarizer=label_binarizer,
+    #     )
+    # except Exception as e:
+    #     raise HTTPException(status_code=400, detail=f"Process data error: {e}")
 
-    model_path = "./model/lr_model_3.joblib"
+    x_categorical = X[cat_features].values
+    logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
+    logging.info(f"main - x_categorical: {x_categorical}")
+    x_continuous = X.drop(*[cat_features], axis=1)
+    logging.info(f"main - x_continuous.shape: {x_continuous.shape}")
+    logging.info(f"main - x_continuous: {x_continuous}")
+    # transform categorical features into 98 features
+    x_categorical = onehotencoder.transform(x_categorical)
+    logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
+    logging.info(f"main - x_categorical: {x_categorical}")
+    X = np.concatenate([x_continuous, x_categorical], axis=1)
+    X = X.reshape(1, -1)
+    logger.info(f"main - X shape: {X.shape}")
+    logger.info(f"main - X: {X}")
+    model_path = "./model/lr_model_5.joblib"
     logger.info("Start inference")
     try:
         predictions = inference(model_path, X)
@@ -249,9 +265,9 @@ async def _predict(input: Inference):
         raise HTTPException(status_code=500, detail=f"Inference error: {str(e)}")
     logger.info("End inference")
     logger.info(f"predictions[0] : {predictions[0]}")
-
-    pred = predictions[0]
-    if pred == 1:
-        return {"results": ">50K"}
-    else:
+    logger.info(f"predictions : {predictions}")
+    pred = int(predictions[0])
+    if pred == 0:
         return {"results": "<50K"}
+    else:
+        return {"results": ">50K"}

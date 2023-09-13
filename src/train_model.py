@@ -32,6 +32,8 @@ def run_training_steps(args):
 
     logger.info("Uploading training data")
     training_data = pd.read_csv(artifact_training_path)
+    logging.info(f"train_model - training_data.shape: {training_data.shape}")
+    logging.info(f"train_model - training_data.columns: {training_data.columns}")
 
     # categorical features
     cat_features = [
@@ -61,7 +63,7 @@ def run_training_steps(args):
 
     # save encoder
     logger.info("Saving Encoder")
-    encoder_path = os.path.join("model", "encoder.joblib")
+    encoder_path = os.path.join("model", "onehot_encoder.joblib")
     dump(encoder, encoder_path)
 
     # save label binarizer
