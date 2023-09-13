@@ -115,8 +115,9 @@ uvicorn main:app --reload
 ```
 
 call the inference endpoint from Postman
-url: POST http://127.0.0.1:8000/predict
+url: POST http://127.0.0.1:8000/predict using a body query like in the tests below
 
+## Step 9: Test Rest API
 Test #1:
 body:
 ```
@@ -168,6 +169,17 @@ response:
 {
     "results": ">50K"
 }
+```
+
+```
+pytest test_main.py -vv
+```
+
+You should get something like
+```
+test_main.py::test_api_locally_get_root PASSED [ 33%]
+test_main.py::test_post_result_over_50k PASSED [ 66%]
+test_main.py::test_post_result_under_50k PASSED [ 100%]
 ```
 
 ## Github Actions
