@@ -1,7 +1,9 @@
 from enum import Enum, IntEnum
 import logging
-import numpy as np
+
+# import numpy as np
 import wandb
+from src.config import api_config
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ValidationError
 import pandas as pd
@@ -194,12 +196,12 @@ class Inference(BaseModel):
 # Define a GET on the specified endpoint.
 @app.get("/")
 async def say_hello():
-    return {"greeting": "Hello World!"}
+    return {"greeting": api_config.app.greet_message}
 
 
 @app.post("/predict/")
 async def _predict(input: Inference):
-    project_name = "census-classification"
+    project_name = api_config.app.project_name
     X = pd.DataFrame(
         {
             "workclass": str(input.workclass),
@@ -238,17 +240,6 @@ async def _predict(input: Inference):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Process data error: {e}")
 
-    # x_categorical = X[cat_features].values
-    # logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
-    # logging.info(f"main - x_categorical: {x_categorical}")
-    # x_continuous = X.drop(*[cat_features], axis=1)
-    # logging.info(f"main - x_continuous.shape: {x_continuous.shape}")
-    # logging.info(f"main - x_continuous: {x_continuous}")
-    # # transform categorical features into 98 features
-    # x_categorical = onehotencoder.transform(x_categorical)
-    # logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
-    # logging.info(f"main - x_categorical: {x_categorical}")
-    # X = np.concatenate([x_continuous, x_categorical], axis=1)
     X = X.reshape(1, -1)
     logger.info(f"main - X shape: {X.shape}")
     logger.info(f"main - X: {X}")
@@ -259,7 +250,6 @@ async def _predict(input: Inference):
     artifact = run.use_artifact(wandb_model, type="model")
     model_path = artifact.file()
     logger.info(f"main - model_path: {model_path}")
-    # model_path = "./model/lr_model_5.joblib"
     logger.info("Start inference")
 
     try:
