@@ -1,13 +1,13 @@
 from enum import Enum, IntEnum
 import logging
 import numpy as np
+import wandb
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ValidationError
 import pandas as pd
 from joblib import load
 from src.ml.model import inference
-
-# from src.ml.data import process_data
+from src.ml.data import process_data
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -199,7 +199,7 @@ async def say_hello():
 
 @app.post("/predict/")
 async def _predict(input: Inference):
-
+    project_name = "census-classification"
     X = pd.DataFrame(
         {
             "workclass": str(input.workclass),
@@ -216,7 +216,6 @@ async def _predict(input: Inference):
             "age": input.age,
             "education-num": input.educationnum,
             "hours-per-week": input.hoursperweek,
-            # "income": 0,
         },
         index=[0],
     )
@@ -228,33 +227,41 @@ async def _predict(input: Inference):
         raise HTTPException(status_code=400, detail=f"Model not found: {e}")
 
     logger.info("Processing training data")
-    # try:
-    #     X, _, _, _ = process_data(
-    #         inputDF, # pd.DataFrame
-    #         categorical_features=cat_features,
-    #         training=False,
-    #         encoder=encoder,
-    #         label_binarizer=label_binarizer,
-    #     )
-    # except Exception as e:
-    #     raise HTTPException(status_code=400, detail=f"Process data error: {e}")
+    try:
+        X, _, _, _ = process_data(
+            X,  # pd.DataFrame
+            categorical_features=cat_features,
+            training=False,
+            encoder=onehotencoder,
+            label_binarizer=None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Process data error: {e}")
 
-    x_categorical = X[cat_features].values
-    logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
-    logging.info(f"main - x_categorical: {x_categorical}")
-    x_continuous = X.drop(*[cat_features], axis=1)
-    logging.info(f"main - x_continuous.shape: {x_continuous.shape}")
-    logging.info(f"main - x_continuous: {x_continuous}")
-    # transform categorical features into 98 features
-    x_categorical = onehotencoder.transform(x_categorical)
-    logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
-    logging.info(f"main - x_categorical: {x_categorical}")
-    X = np.concatenate([x_continuous, x_categorical], axis=1)
+    # x_categorical = X[cat_features].values
+    # logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
+    # logging.info(f"main - x_categorical: {x_categorical}")
+    # x_continuous = X.drop(*[cat_features], axis=1)
+    # logging.info(f"main - x_continuous.shape: {x_continuous.shape}")
+    # logging.info(f"main - x_continuous: {x_continuous}")
+    # # transform categorical features into 98 features
+    # x_categorical = onehotencoder.transform(x_categorical)
+    # logging.info(f"main - x_categorical.shape: {x_categorical.shape}")
+    # logging.info(f"main - x_categorical: {x_categorical}")
+    # X = np.concatenate([x_continuous, x_categorical], axis=1)
     X = X.reshape(1, -1)
     logger.info(f"main - X shape: {X.shape}")
     logger.info(f"main - X: {X}")
-    model_path = "./model/lr_model_5.joblib"
+
+    # download best model from Weight and Biases
+    run = wandb.init(project=project_name, job_type="inference")
+    wandb_model = f"laurent4ml/model-registry/{project_name}-model:latest"
+    artifact = run.use_artifact(wandb_model, type="model")
+    model_path = artifact.file()
+    logger.info(f"main - model_path: {model_path}")
+    # model_path = "./model/lr_model_5.joblib"
     logger.info("Start inference")
+
     try:
         predictions = inference(model_path, X)
     except ValidationError as e:
@@ -271,3 +278,4 @@ async def _predict(input: Inference):
         return {"results": "<50K"}
     else:
         return {"results": ">50K"}
+    wandb.finish()
