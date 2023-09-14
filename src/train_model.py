@@ -4,6 +4,7 @@ import wandb
 from joblib import dump
 import argparse
 import os
+import wandb
 from ml.data import process_data
 from ml.model import train_model
 
@@ -70,6 +71,18 @@ def run_training_steps(args):
     logger.info("Saving Label Binarizer")
     label_binarizer_path = os.path.join("model", "label_binarizer.joblib")
     dump(label_binarizer, label_binarizer_path)
+
+    # store model in Weight and Biases
+    model_artifact = wandb.Artifact(f"{args.project_name}-model_{run.id}", type="model")
+    model_artifact.add_file(model_path)
+    run.log_artifact(model_artifact)
+
+    # Link the model to the Model Registry
+    run.link_artifact(
+        model_artifact, f"laurent4ml/model-registry/{args.project_name}-model"
+    )
+
+    run.finish()
 
 
 if __name__ == "__main__":
