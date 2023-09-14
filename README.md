@@ -3,6 +3,11 @@
 ## Project
 The project is training a logistic regression model which aims to classifiy wether or not an individual has an income over $50,000 based on various demographics features. Check the MODEL_CARD.md for more details.
 
+The model is trained on the UCI Census Income Dataset. (https://archive.ics.uci.edu/dataset/20/census+income).
+
+This project is live at this url: https://census-classification.onrender.com
+The main endpoint is /predict which is a POST, check in the test section for examples.
+
 ## Goal
 Build a MLOps Pipeline using Github Actions for automation, Weight and Biases for model registry and deploy the app to Renders.com a Cloud Service Provider
 
