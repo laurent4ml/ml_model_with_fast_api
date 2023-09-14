@@ -82,6 +82,18 @@ def run_training_steps(args):
         model_artifact, f"laurent4ml/model-registry/{args.project_name}-model"
     )
 
+    # store encoder in Weight and Biases
+    encoder_artifact = wandb.Artifact(
+        f"{args.project_name}-encoder_{run.id}", type="model"
+    )
+    encoder_artifact.add_file(encoder_path)
+    run.log_artifact(encoder_artifact)
+
+    # Link the model to the Model Registry
+    run.link_artifact(
+        encoder_artifact, f"laurent4ml/model-registry/{args.project_name}-encoder"
+    )
+
     run.finish()
 
 

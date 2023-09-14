@@ -202,6 +202,9 @@ async def say_hello():
 @app.post("/predict/")
 async def _predict(input: Inference):
     project_name = api_config.app.project_name
+
+    run = wandb.init(project=project_name, job_type="inference")
+
     X = pd.DataFrame(
         {
             "workclass": str(input.workclass),
@@ -222,8 +225,14 @@ async def _predict(input: Inference):
         index=[0],
     )
 
+    wandb_encoder = f"laurent4ml/model-registry/{project_name}-encoder:latest"
+    artifact_encoder = run.use_artifact(wandb_encoder, type="model")
+    encoder_path = artifact_encoder.file()
+    logger.info(f"main - encoder_path: {encoder_path}")
+
     try:
-        onehotencoder = load("./model/encoder.joblib")
+        onehotencoder = load(encoder_path)
+        # onehotencoder = load("./model/encoder.joblib")
         # label_binarizer = load("./model/label_binarizer.joblib")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Model not found: {e}")
@@ -245,13 +254,12 @@ async def _predict(input: Inference):
     logger.info(f"main - X: {X}")
 
     # download best model from Weight and Biases
-    run = wandb.init(project=project_name, job_type="inference")
     wandb_model = f"laurent4ml/model-registry/{project_name}-model:latest"
     artifact = run.use_artifact(wandb_model, type="model")
     model_path = artifact.file()
     logger.info(f"main - model_path: {model_path}")
-    logger.info("Start inference")
 
+    logger.info("Start inference")
     try:
         predictions = inference(model_path, X)
     except ValidationError as e:
