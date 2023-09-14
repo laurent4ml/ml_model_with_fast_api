@@ -1,28 +1,27 @@
 # Census Classifier
 
+## Project
+The project is training a logistic regression model which aims to classifiy wether or not an individual has an income over $50,000 based on various demographics features. Check the MODEL_CARD.md for more details.
+
 ## Goal
-Build a MLOps Pipeline using Github Actions and deploy it to a Cloud Service Provider
+Build a MLOps Pipeline using Github Actions for automation, Weight and Biases for model registry and deploy the app to Renders.com a Cloud Service Provider
 
 ## Project Setup
-This multiple step project is using python version 3.
+This multiple step project is using python version 3.8.17 and the librairies in requirements.txt
 
 ## Using CLI
 Running all steps through CLI
 ```
-bash deploy/jobs/workloads.sh
-```
-workloads.sh file content:
-```
-# All Steps are defined below
 python src/model_build/prepare_data/prepare.py            # prepare dataset
-python src/model_build/data_preparation/wandb_upload.py   # track dataset
-python src/model_build/data_split/train_test_split.py     # split dataset
-pytest --dataset-loc=$DATASET_LOC tests/data ...          # test data
-python -m pytest tests/code --verbose --disable-warnings  # test code
-python src/train_model.py --project-name "census-cl" ...  # train model
-python src/model_deploy/evaluate.py --run-id $RUN_ID ...  # evaluate model
-pytest --run-id=$RUN_ID tests/model ...                   # test model
-python src/model_deploy/serve.py --run_id $RUN_ID         # serve model
+python src/model_build/data_preparation/wandb_upload.py ..# track dataset
+python src/model_build/data_split/train_test_split.py ... # split dataset
+pytest src/test/data -vv --input_artifact ...             # test data
+pytest src/ml -vv --input_artifact ...                    # test model
+python src/train_model.py --artifact_root="census" ...    # train model
+python src/evaluate_model.py --artifact_root="census" ... # evaluate model
+uvicorn main:app --reload                                 # install local app
+pytest test_main.py -vv                                   # test api
+python scripts/run_inference.py                           # run PROD inference
 ```
 
 ## Step 1: Preparing Data
@@ -67,11 +66,18 @@ pytest src/ml -vv --input_artifact laurent4ml/census-classification/census_train
 ```
 
 ## Step 6: Model Training
-train model
+This step is training the model based on the training data provided.
 ```
 python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_5.joblib"
 ```
-This step trains the model and store the models on local
+Steps Performed:
+- trains model
+- store trained model on local
+- store one hot encoder on local
+- store label binarizer on local
+- upload trained model to wand model registry
+- upload one hot encoder to wandb model registry
+
 
 ## Step 7: Evaluate Model
 evaluate model
@@ -106,7 +112,7 @@ education - Preschool - {'precision': 1.0, 'recall': 1.0, 'f1': 1.0}
 ```
 This information is also available in Weight And Biases dashboard.
 
-## Step 8: Rest API using FastAPI
+## Step 8: Setup Rest API on local using FastAPI
 Install app on local machine
 ```
 pip install fastapi
@@ -182,16 +188,12 @@ test_main.py::test_post_result_over_50k PASSED [ 66%]
 test_main.py::test_post_result_under_50k PASSED [ 100%]
 ```
 
-## Github Actions
-
-We will use Github Actions to:
-- Automate Data Download
-- Check whether the model should be retrained or not
-- Compare models
-- Put a model into production by uploading the new model to a Cloud Provider and deploying it
-- Run tests
-
-To add a github action create a yaml file in .github/workflow
-
-The first Github Action load the census file to WandB artifacts. This is manaual action that should performed first so that the data is available for the next actions.
-Filename: data_download.yaml
+## Step 10: Run inference script
+```
+python scripts/run_inference.py
+```
+result:
+```
+200
+{'results': '<50K'}
+```
