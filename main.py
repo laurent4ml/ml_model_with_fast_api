@@ -1,3 +1,4 @@
+""" API to return a prediction based on the given inference parameters"""
 from enum import Enum, IntEnum
 import logging
 

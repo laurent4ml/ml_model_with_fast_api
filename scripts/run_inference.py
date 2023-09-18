@@ -1,3 +1,4 @@
+""" Python script to execute a POST query on the predict endpoint """
 import requests
 
 url = "https://census-classification.onrender.com/predict"
