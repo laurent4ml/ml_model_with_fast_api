@@ -17,25 +17,24 @@ This multiple step project is using python version 3.8.17 and the librairies in 
 ## Using CLI
 Running all steps through CLI
 ```
-python src/model_build/prepare_data/prepare.py            # prepare dataset
-python src/model_build/data_preparation/wandb_upload.py ..# track dataset
-python src/model_build/data_split/train_test_split.py ... # split dataset
-pytest src/test/data -vv --input_artifact ...             # test data
-pytest src/ml -vv --input_artifact ...                    # test model
-python src/train_model.py --artifact_root="census" ...    # train model
-python src/evaluate_model.py --artifact_root="census" ... # evaluate model
-uvicorn main:app --reload                                 # install local app
-pytest test_main.py -vv                                   # test api
-python scripts/run_inference.py                           # run PROD inference
+mlflow run src/model_build/data_preparation -P local_directory=data            # prepare dataset
+python src/model_build/data_upload/wandb_upload.py                             # track dataset
+python src/model_build/data_split/train_test_split.py                          # split dataset
+pytest src/test/data -vv --input_artifact                                      # test data
+pytest src/ml -vv --input_artifact                                             # test model
+python src/train_model.py --artifact_root="census"                             # train model
+python src/evaluate_model.py --artifact_root="census"                          # evaluate model
+uvicorn main:app --reload                                                      # install local app
+pytest test_main.py -vv                                                        # test api
+python scripts/run_inference.py                                                # run PROD inference
 ```
 
 ## Step 1: Preparing Data
-to load the data set:
+to load the data set into "data" directory
 ```
-python src/model_build/prepare_data/prepare.py
+mlflow run src/model_build/data_preparation -P local_directory=data
 ```
-
-This will create a folder 'data' and store the dataset in a file census.csv
+This will create a folder 'data' at the root of the project, store the data files downloaded from the UCI website and store the cleaned dataset in a file census.csv
 
 ## Step 2: Uploading data set to WandB
 to store a version of the dataset to WandB:
@@ -44,7 +43,7 @@ pip install wandb
 
 export WANDB_API_KEY=<api_key>
 
-python src/model_build/data_preparation/wandb_upload.py --file="./data/census.csv" --artifact_name census --artifact_type=dataset --artifact_description="census dataset for ml project"
+python src/model_build/data_upload/wandb_upload.py --file="./data/census.csv" --artifact_name census --artifact_type=dataset --artifact_description="census dataset for ml project"
 ```
 
 This will create a new project in WandB and store census.csv as an artifact

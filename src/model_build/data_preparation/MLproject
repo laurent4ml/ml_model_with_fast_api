@@ -1,0 +1,11 @@
+name: data preparation
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      local_directory:
+        description: Local directory containing downloaded files
+        type: str
+        default: data
+    command: "python prepare.py --local_directory {local_directory}"
