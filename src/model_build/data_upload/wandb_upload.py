@@ -1,30 +1,43 @@
 #!/usr/bin/env python
 import argparse
 import logging
+import os
 import wandb
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def upload(args):
+    """upload creates a wandb.Artifact and adds a file to it
 
-    logger.info(f"Starting uploading {args.file} ...")
+    Args:
+        - file (str): file to upload to wandb
+        - artifact_name (str): name of the artifact
+        - artifact_type (str): type of artifact
+        - artifact_description (str): description of the artifact
+    """
+    file_path = args.file
+    logger.info(f"Starting uploading {file_path} ...")
+
+    if not os.path.exists(file_path):
+        logger.info(f"file {file_path} does not exits")
+        exit(1)
 
     with wandb.init(
         project="census-classification",
         notes="training census dataset",
         tags=["training"],
-        job_type="download_data",
+        job_type="upload_data",
     ) as run:
-        with open(args.file, "r") as fp:
+        with open(file_path, "r") as fp:
 
             logger.info("Creating artifact")
             artifact = wandb.Artifact(
                 name=args.artifact_name,
                 type=args.artifact_type,
                 description=args.artifact_description,
-                metadata={"original_file": args.file},
+                metadata={"original_file": file_path},
             )
             artifact.add_file(fp.name, name="census_clean")
 
@@ -59,4 +72,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    go(args)
+    upload(args)

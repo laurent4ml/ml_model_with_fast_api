@@ -1,0 +1,24 @@
+name: data upload
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      file_path:
+        description: file to upload to wandb
+        type: str
+        default: "census.csv"
+      artifact_name:
+        description: artifact name
+        type: str
+      artifact_type:
+        description: artifact type
+        type: str
+      artifact_description:
+        description: artifact description
+        type: str
+    command: >-
+      python wandb_upload.py --file {file_path} \
+                    --artifact_name {artifact_name} \
+                    --artifact_type {artifact_type} \
+                    --artifact_description {artifact_description}

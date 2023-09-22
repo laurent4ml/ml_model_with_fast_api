@@ -1,5 +1,8 @@
-app:
+main:
   project_name: census-classification
+  experiment_name: development
+  components_repository: model_build
+  steps: all
   greet_message: "Hello World!"
   train:
     cat_features:
