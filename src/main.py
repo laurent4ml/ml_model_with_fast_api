@@ -10,6 +10,7 @@ import utils
 
 _steps = [
     "download",
+    "upload",
 ]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
@@ -35,6 +36,20 @@ def run_pipeline(config: DictConfig):
             download_path = os.path.join(
                 hydra.utils.get_original_cwd(),
                 config["main"]["components_repository"],
+                "data_preparation",
+            )
+
+            _ = mlflow.run(
+                download_path,
+                "main",
+                parameters={"local_directory": "data"},
+            )
+
+        if "upload" in active_steps:
+            # Upload file in W&B
+            upload_path = os.path.join(
+                hydra.utils.get_original_cwd(),
+                config["main"]["components_repository"],
                 "data_upload",
             )
 
@@ -42,7 +57,7 @@ def run_pipeline(config: DictConfig):
                 hydra.utils.get_original_cwd(), "../data/census.csv"
             )
             _ = mlflow.run(
-                download_path,
+                upload_path,
                 "main",
                 parameters={
                     "file": file_path,

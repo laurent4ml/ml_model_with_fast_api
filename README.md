@@ -17,8 +17,7 @@ This multiple step project is using python version 3.8.17 and the librairies in 
 ## Using CLI
 Running all steps through CLI
 ```
-mlflow run src/model_build/data_preparation -P local_directory=data # prepare dataset
-mlflow run src                                                      # track dataset
+mlflow run src                             # prepare dataset and track dataset
 python src/model_build/data_split/train_test_split.py               # split dataset
 pytest src/test/data -vv --input_artifact                           # test data
 pytest src/ml -vv --input_artifact                                  # test model
@@ -32,7 +31,7 @@ python scripts/run_inference.py                                     # run infere
 ## Step 1: Preparing Data
 to load the data set into "data" directory
 ```
-mlflow run src/model_build/data_preparation -P local_directory=data
+mlflow run src -P steps=download
 ```
 This will create a folder 'data' at the root of the project, store the data files downloaded from the UCI website and store the cleaned dataset in a file census.csv
 
@@ -41,9 +40,8 @@ to store a version of the dataset to WandB:
 ```
 export WANDB_API_KEY=<api_key>
 
-mlflow run src
+mlflow run src -P steps=upload
 ```
-
 This will create a new project in WandB and store census.csv as an artifact
 
 ## Step 3: Train Test Split
