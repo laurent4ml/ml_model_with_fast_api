@@ -21,3 +21,10 @@ main:
       - hours-per-week
       - native-country
       - income
+data_split:
+  input_artifact: "laurent4ml/census-classification/census.csv:v0"
+  artifact_root: "census"
+  artifact_type: dataset # needs to be dataset
+  test_size: 0.20
+  random_state: 42
+  stratify: "null"

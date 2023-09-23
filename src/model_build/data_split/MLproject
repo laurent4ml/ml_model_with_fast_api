@@ -1,0 +1,37 @@
+name: data split
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      file_path:
+        description: file path
+        type: str
+      input_artifact:
+        description: file to upload to wandb
+        type: str
+        default: "census.csv"
+      artifact_root:
+        description: artifact name
+        type: str
+      artifact_type:
+        description: artifact type
+        type: str
+      test_size:
+        description: artifact description
+        type: str
+      random_state:
+        description: artifact random state
+        type: int
+      stratify:
+        description: stratify
+        type: int
+    command: >-
+      python train_test_split.py \
+                    --file_path {file_path} \
+                    --input_artifact {input_artifact} \
+                    --artifact_root {artifact_root} \
+                    --artifact_type {artifact_type} \
+                    --test_size {test_size} \
+                    --random_state {random_state} \
+                    --stratify {stratify}

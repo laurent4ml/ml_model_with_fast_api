@@ -2,20 +2,28 @@
 import argparse
 import logging
 import os
-
-# import tempfile
-
 import pandas as pd
 import wandb
 from sklearn.model_selection import train_test_split
-
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def split_dataset(args):
+    """
+    Downloading full dataset from wandb and splits it into train and test datasets.
+    Store the train and test datasets on local and upload them to wandb.
 
+    Args:
+        - file_path (str): file path
+        - input_artifact (str): Input artifact string
+        - artifact_root (str): Artifact root
+        - artifact_type (str): Artifact type
+        - test_size (int): Test size
+        - random_state  (int): Random state
+        - stratify  (int): Random strat
+    """
     run = wandb.init(project="census-classification", job_type="split_data")
 
     logger.info("Downloading and reading artifact")
@@ -40,12 +48,16 @@ def go(args):
         # Make the artifact name from the provided root plus the name of the split
         artifact_name = f"{args.artifact_root}_{split}.csv"
 
-        # Get the path on disk
-        path = os.path.join("data", artifact_name)
+        local_directory = os.path.join(args.file_path, "data_split")
 
-        logger.info(f"Uploading the {split} dataset to {artifact_name}")
+        if not os.path.exists(local_directory):
+            logger.info(f"Creating {local_directory}")
+            os.mkdir(local_directory)
 
-        # Save then upload to W&B
+        path = os.path.join(local_directory, artifact_name)
+        logger.info(f"Saving the {split} dataset to {path}")
+
+        # Save to local filesystem
         df.to_csv(path, index=False)
 
         artifact = wandb.Artifact(
@@ -54,11 +66,11 @@ def go(args):
             description=f"{split} split of dataset {args.input_artifact}",
         )
         artifact.add_file(path)
-
-        logger.info("Logging artifact")
+        # Upload to W&B
+        logger.info(f"Logging artifact {artifact_name}  in WandB")
         run.log_artifact(artifact)
 
-        # This waits for the artifact to be uploaded to W&B. If you
+        # This waits for the artifact to be uploaded to W&B. If we
         # do not add this, the temp directory might be removed before
         # W&B had a chance to upload the datasets, and the upload
         # might fail
@@ -69,6 +81,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Split a dataset into train and test",
         fromfile_prefix_chars="@",
+    )
+
+    parser.add_argument(
+        "--file_path",
+        type=str,
+        help="File path",
+        required=True,
     )
 
     parser.add_argument(
@@ -114,9 +133,9 @@ if __name__ == "__main__":
         help="If set, it is the name of a column to use for stratified splitting",
         type=str,
         required=False,
-        default="null",  # unfortunately mlflow does not support well optional parameters
+        default="null",  # unfortunately mlflow does not support well optional params
     )
 
     args = parser.parse_args()
 
-    go(args)
+    split_dataset(args)

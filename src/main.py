@@ -8,10 +8,7 @@ import hydra
 from omegaconf import DictConfig
 import utils
 
-_steps = [
-    "download",
-    "upload",
-]
+_steps = ["download", "upload", "train_test_split"]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -67,20 +64,25 @@ def run_pipeline(config: DictConfig):
                 },
             )
 
-        # if "basic_cleaning" in active_steps:
-        #     _ = mlflow.run(
-        #         os.path.join(hydra.utils.get_original_cwd(),
-        #                      "src", "basic_cleaning"),
-        #         "main",
-        #         parameters={
-        #             "input_artifact": config['basic_cleaning']['input_artifact'],
-        #             "output_artifact": config['basic_cleaning']['output_artifact'],
-        #             "output_type": config['basic_cleaning']['output_type'],
-        #             "output_description": config['basic_cleaning']['output_description'],
-        #             "min_price": config['etl']['min_price'],
-        #             "max_price": config['etl']['max_price']
-        #         },
-        #     )
+        if "train_test_split" in active_steps:
+            file_path = os.path.join(hydra.utils.get_original_cwd(), "..")
+            _ = mlflow.run(
+                os.path.join(
+                    hydra.utils.get_original_cwd(),
+                    config["main"]["components_repository"],
+                    "data_split",
+                ),
+                "main",
+                parameters={
+                    "file_path": file_path,
+                    "input_artifact": config["data_split"]["input_artifact"],
+                    "artifact_root": config["data_split"]["artifact_root"],
+                    "artifact_type": config["data_split"]["artifact_type"],
+                    "test_size": config["data_split"]["test_size"],
+                    "random_state": config["data_split"]["random_state"],
+                    "stratify": config["data_split"]["stratify"],
+                },
+            )
 
         # if "data_check" in active_steps:
         #     _ = mlflow.run(
