@@ -8,7 +8,7 @@ import hydra
 from omegaconf import DictConfig
 import utils
 
-_steps = ["download", "upload", "train_test_split", "data_check"]
+_steps = ["download", "upload", "train_test_split", "data_check", "model_check"]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -86,7 +86,7 @@ def run_pipeline(config: DictConfig):
 
         if "data_check" in active_steps:
             file_path = os.path.join(hydra.utils.get_original_cwd(), "test", "data")
-            logger.info(f"file_path: {file_path}")
+            logger.info(f"data_check file_path: {file_path}")
             _ = mlflow.run(
                 file_path,
                 "main",
@@ -111,18 +111,14 @@ def run_pipeline(config: DictConfig):
                 },
             )
 
-        # if "data_split" in active_steps:
-        #     _ = mlflow.run(
-        #         f"{config['main']['components_repository']}/train_val_test_split",
-        #         "main",
-        #         version='main',
-        #         parameters={
-        #             "input": config['data_check']['csv'],
-        #             "test_size": config['modeling']['test_size'],
-        #             "random_seed": config['modeling']['random_seed'],
-        #             "stratify_by": config['modeling']['stratify_by']
-        #         },
-        #     )
+        if "model_check" in active_steps:
+            file_path = os.path.join(hydra.utils.get_original_cwd(), "test", "model")
+            logger.info(f"model check file_path: {file_path}")
+            _ = mlflow.run(
+                file_path,
+                "main",
+                parameters={"input_artifact": config["model_check"]["input_artifact"]},
+            )
 
         # if "train_random_forest" in active_steps:
 

@@ -17,8 +17,7 @@ This multiple step project is using python version 3.8.17 and the librairies in 
 ## Using CLI
 Running all steps through CLI
 ```
-mlflow run src     # prepare dataset, track dataset and split dataset, test data
-pytest src/ml -vv --input_artifact                              # test model
+mlflow run src # prepare dataset, track and split dataset, test data and model
 python src/train_model.py --artifact_root="census"              # train model
 python src/evaluate_model.py --artifact_root="census"           # evaluate model
 uvicorn main:app --reload                                       # install app
@@ -57,8 +56,9 @@ mlflow run src -P steps=data_check
 
 ## Step 5: Test Model
 ```
-pytest src/ml -vv --input_artifact laurent4ml/census-classification/census_train.csv:latest
+mlflow run src -P steps=model_check
 ```
+Run 3 test against model training results.
 
 ## Step 6: Model Training
 This step is training the model based on the training data provided.
