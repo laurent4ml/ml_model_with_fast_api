@@ -15,6 +15,7 @@ _steps = [
     "data_check",
     "model_check",
     "model_training",
+    "model_evaluation",
 ]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
@@ -141,22 +142,28 @@ def run_pipeline(config: DictConfig):
                 parameters={
                     "model_directory": model_dir,
                     "artifact_root": config["model_training"]["artifact_root"],
-                    "project_name": config["model_training"]["project_name"],
+                    "project_name": config["main"]["project_name"],
                     "model_file": config["model_training"]["model_file"],
                 },
             )
 
-        # if "test_regression_model" in active_steps:
-
-        #     _ = mlflow.run(
-        #         f"{config['main']['components_repository']}/test_regression_model",
-        #         "main",
-        #         version='main',
-        #         parameters={
-        #             "mlflow_model": "random_forest_export:prod",
-        #             "test_dataset": "test_data.csv:latest"
-        #         },
-        #     )
+        if "model_evaluation" in active_steps:
+            file_path = os.path.join(
+                hydra.utils.get_original_cwd(), "model_build", "model_evaluate"
+            )
+            logger.info(f"model evaluation file_path: {file_path}")
+            model_dir = os.path.join(hydra.utils.get_original_cwd(), "../model")
+            logger.info(f"model training model_dir: {model_dir}")
+            _ = mlflow.run(
+                file_path,
+                "main",
+                parameters={
+                    "model_directory": model_dir,
+                    "artifact_root": config["model_evaluation"]["artifact_root"],
+                    "project_name": config["main"]["project_name"],
+                    "model_file": config["model_evaluation"]["model_file"],
+                },
+            )
 
 
 if __name__ == "__main__":

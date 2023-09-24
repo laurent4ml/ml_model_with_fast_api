@@ -37,5 +37,7 @@ model_check:
 model_training:
   model_name: "Logistic Regression"
   artifact_root: "census"
-  project_name: "census-classification"
-  model_file: "lr_model_6.joblib"
+  model_file: "lr_model.joblib"
+model_evaluation:
+  artifact_root: "census"
+  model_file: "lr_model.joblib"

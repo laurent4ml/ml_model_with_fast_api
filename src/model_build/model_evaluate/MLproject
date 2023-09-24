@@ -1,0 +1,22 @@
+name: model evaluation
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      artifact_root:
+        description: dataset root name
+        type: str
+        default: "census"
+      project_name:
+        description: project name
+        type: str
+        default: "census-classification"
+      model_file:
+        description: model file name
+        type: str
+    command: >-
+      python evaluate_model.py \
+                    --artifact_root {artifact_root} \
+                    --project_name {project_name} \
+                    --model_file {model_file}
