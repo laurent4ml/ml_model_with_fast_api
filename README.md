@@ -15,14 +15,22 @@ Build a MLOps Pipeline using Github Actions for automation, Weight and Biases fo
 This multiple step project is using python version 3.8.17 and the librairies in requirements.txt
 
 ## Using CLI
-Running all steps through CLI
+Running all steps using mlflow
 ```
-mlflow run src # prepare dataset, track and split dataset, test data and model
-python src/train_model.py --artifact_root="census"              # train model
-python src/evaluate_model.py --artifact_root="census"           # evaluate model
-uvicorn main:app --reload                                       # install app
-pytest test_main.py -vv                                         # test api
-python scripts/run_inference.py                                 # run inference
+# prepare dataset, track and split dataset, test data and model, train model
+mlflow run src
+
+# evaluate model
+python src/evaluate_model.py --artifact_root="census"
+
+# install app
+uvicorn main:app --reload
+
+# test api
+pytest test_main.py -vv
+
+# run inference
+python scripts/run_inference.py
 ```
 
 ## Step 1: Preparing Data
@@ -63,7 +71,7 @@ Run 3 test against model training results.
 ## Step 6: Model Training
 This step is training the model based on the training data provided.
 ```
-python src/train_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_5.joblib"
+mlflow run src -P steps=model_training
 ```
 Steps Performed:
 - trains model

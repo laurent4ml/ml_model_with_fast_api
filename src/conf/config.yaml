@@ -34,3 +34,8 @@ data_check:
   input_artifact_test: "laurent4ml/census-classification/census_test.csv:v0"
 model_check:
   input_artifact: "laurent4ml/census-classification/census_train.csv:latest"
+model_training:
+  model_name: "Logistic Regression"
+  artifact_root: "census"
+  project_name: "census-classification"
+  model_file: "lr_model_6.joblib"

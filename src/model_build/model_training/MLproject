@@ -1,0 +1,26 @@
+name: model training
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+      model_directory:
+        description: directory to save model files
+        type: str
+      artifact_root:
+        description: dataset root name
+        type: str
+        default: "census"
+      project_name:
+        description: project name
+        type: str
+        default: "census-classification"
+      model_file:
+        description: model file name
+        type: str
+    command: >-
+      python train_model.py \
+                    --model_directory {model_directory} \
+                    --artifact_root {artifact_root} \
+                    --project_name {project_name} \
+                    --model_file {model_file}

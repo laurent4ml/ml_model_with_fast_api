@@ -4,9 +4,14 @@ import wandb
 from joblib import dump
 import argparse
 import os
-import wandb
-from ml.data import process_data
-from ml.model import train_model
+
+import sys
+
+# append the path of the parent directory
+sys.path.append("../../..")
+
+from src.ml.data import process_data
+from src.ml.model import train_model  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -17,11 +22,12 @@ def run_training_steps(args):
     train - function to train and save a Logistic Regression model
 
     Args:
+     - model_directory: directory to save models
      - artifact_root: dataset root name
      - project_name: (str) name of the project
      - model_file: (str) model filename
     """
-    run = wandb.init(project=args.project_name, job_type="process_data")
+    run = wandb.init(project=args.project_name, job_type="model_training")
 
     logger.info("Downloading training artifact from  WandB")
     artifact_training_name = (
@@ -58,18 +64,18 @@ def run_training_steps(args):
     model = train_model(x_train, y_train)
 
     # save model
-    logger.info("Saving Model")
-    model_path = os.path.join("model", args.model_file)
+    logger.info(f"Saving Model to {args.model_directory}")
+    model_path = os.path.join(args.model_directory, args.model_file)
     dump(model, model_path)
 
     # save encoder
-    logger.info("Saving Encoder")
-    encoder_path = os.path.join("model", "onehot_encoder.joblib")
+    logger.info(f"Saving Encoder to {args.model_directory}")
+    encoder_path = os.path.join(args.model_directory, "onehot_encoder.joblib")
     dump(encoder, encoder_path)
 
     # save label binarizer
-    logger.info("Saving Label Binarizer")
-    label_binarizer_path = os.path.join("model", "label_binarizer.joblib")
+    logger.info(f"Saving Label Binarizer to {args.model_directory}")
+    label_binarizer_path = os.path.join(args.model_directory, "label_binarizer.joblib")
     dump(label_binarizer, label_binarizer_path)
 
     # store model in Weight and Biases
@@ -101,6 +107,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Train a model and store results in WandB",
         fromfile_prefix_chars="@",
+    )
+
+    parser.add_argument(
+        "--model_directory",
+        type=str,
+        help="directory to save model files",
+        required=True,
     )
 
     parser.add_argument(

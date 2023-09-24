@@ -8,7 +8,14 @@ import hydra
 from omegaconf import DictConfig
 import utils
 
-_steps = ["download", "upload", "train_test_split", "data_check", "model_check"]
+_steps = [
+    "download",
+    "upload",
+    "train_test_split",
+    "data_check",
+    "model_check",
+    "model_training",
+]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -120,28 +127,24 @@ def run_pipeline(config: DictConfig):
                 parameters={"input_artifact": config["model_check"]["input_artifact"]},
             )
 
-        # if "train_random_forest" in active_steps:
-
-        #     rf_config = os.path.abspath("rf_config.json")
-        #     with open(rf_config, "w+") as config_file:
-        #         json.dump(
-        #             dict(config["modeling"]["random_forest"].items()), config_file)
-
-        #     logger.info(f"modeling: {config['modeling']}")
-        #     _ = mlflow.run(
-        #         os.path.join(hydra.utils.get_original_cwd(),
-        #                      "src", "train_random_forest"),
-        #         "main",
-        #         parameters={
-        #             "trainval_artifact": config['modeling']['input_artifact'],
-        #             "val_size": config['modeling']['val_size'],
-        #             "random_seed": config['modeling']['random_seed'],
-        #             "stratify_by": config['modeling']['stratify_by'],
-        #             "rf_config": rf_config,
-        #             "max_tfidf_features": config['modeling']['max_tfidf_features'],
-        #             "output_artifact": config['modeling']['output_artifact']
-        #         },
-        #     )
+        if "model_training" in active_steps:
+            logger.info(f"model training: {config['model_training']['model_name']}")
+            file_path = os.path.join(
+                hydra.utils.get_original_cwd(), "model_build", "model_training"
+            )
+            logger.info(f"model training file_path: {file_path}")
+            model_dir = os.path.join(hydra.utils.get_original_cwd(), "../model")
+            logger.info(f"model training model_dir: {model_dir}")
+            _ = mlflow.run(
+                file_path,
+                "main",
+                parameters={
+                    "model_directory": model_dir,
+                    "artifact_root": config["model_training"]["artifact_root"],
+                    "project_name": config["model_training"]["project_name"],
+                    "model_file": config["model_training"]["model_file"],
+                },
+            )
 
         # if "test_regression_model" in active_steps:
 
