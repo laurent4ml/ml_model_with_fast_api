@@ -28,3 +28,7 @@ data_split:
   test_size: 0.20
   random_state: 42
   stratify: "null"
+data_check:
+  input_artifact_full: "laurent4ml/census-classification/census.csv:v0"
+  input_artifact_train: "laurent4ml/census-classification/census_train.csv:v0"
+  input_artifact_test: "laurent4ml/census-classification/census_test.csv:v0"

@@ -1,0 +1,12 @@
+name: census-classification
+conda_env: conda.yml
+
+entry_points:
+  main:
+    parameters:
+
+      input_artifact:
+        description: Input artifact
+        type: str
+
+    command: "pytest . -vv --input_artifact {input_artifact}"

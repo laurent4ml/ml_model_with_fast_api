@@ -17,14 +17,13 @@ This multiple step project is using python version 3.8.17 and the librairies in 
 ## Using CLI
 Running all steps through CLI
 ```
-mlflow run src             # prepare dataset, track dataset and split dataset
-pytest src/test/data -vv --input_artifact                           # test data
-pytest src/ml -vv --input_artifact                                  # test model
-python src/train_model.py --artifact_root="census"                  # train model
-python src/evaluate_model.py --artifact_root="census"               # evaluate model
-uvicorn main:app --reload                                           # install app
-pytest test_main.py -vv                                             # test api
-python scripts/run_inference.py                                     # run inference
+mlflow run src     # prepare dataset, track dataset and split dataset, test data
+pytest src/ml -vv --input_artifact                              # test model
+python src/train_model.py --artifact_root="census"              # train model
+python src/evaluate_model.py --artifact_root="census"           # evaluate model
+uvicorn main:app --reload                                       # install app
+pytest test_main.py -vv                                         # test api
+python scripts/run_inference.py                                 # run inference
 ```
 
 ## Step 1: Preparing Data
@@ -51,11 +50,9 @@ mlflow run src -P steps=train_test_split
 This will store two datasets in WandB and in the "data" local directory. One for trainning and one for validation.
 
 ## Step 4: Test Data
-Data testing of 3 csv files
+Data testing of 3 csv files: census.csv, census_train.csv, census_test.csv
 ```
-pytest src/test/data -vv --input_artifact laurent4ml/census-classification/census_project:latest
-pytest src/test/data -vv --input_artifact laurent4ml/census-classification/census_train.csv:v0
-pytest src/test/data -vv --input_artifact laurent4ml/census-classification/census_test.csv:v0
+mlflow run src -P steps=data_check
 ```
 
 ## Step 5: Test Model
