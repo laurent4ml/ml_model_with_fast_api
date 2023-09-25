@@ -22,16 +22,16 @@ main:
       - native-country
       - income
 data_split:
-  input_artifact: "laurent4ml/census-classification/census.csv:v0"
+  input_artifact: "laurent4ml/census-classification/census.csv:latest"
   artifact_root: "census"
   artifact_type: dataset # needs to be dataset
   test_size: 0.20
   random_state: 42
   stratify: "null"
 data_check:
-  input_artifact_full: "laurent4ml/census-classification/census.csv:v0"
-  input_artifact_train: "laurent4ml/census-classification/census_train.csv:v0"
-  input_artifact_test: "laurent4ml/census-classification/census_test.csv:v0"
+  input_artifact_full: "laurent4ml/census-classification/census.csv:latest"
+  input_artifact_train: "laurent4ml/census-classification/census_train.csv:latest"
+  input_artifact_test: "laurent4ml/census-classification/census_test.csv:latest"
 model_check:
   input_artifact: "laurent4ml/census-classification/census_train.csv:latest"
 model_training:

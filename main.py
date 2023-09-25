@@ -197,12 +197,12 @@ class Inference(BaseModel):
 # Define a GET on the specified endpoint.
 @app.get("/")
 async def say_hello():
-    return {"greeting": api_config.app.greet_message}
+    return {"greeting": api_config.main.greet_message}
 
 
 @app.post("/predict/")
 async def _predict(input: Inference):
-    project_name = api_config.app.project_name
+    project_name = api_config.main.project_name
 
     run = wandb.init(project=project_name, job_type="inference")
 
@@ -226,7 +226,7 @@ async def _predict(input: Inference):
         index=[0],
     )
 
-    wandb_encoder = f"laurent4ml/model-registry/{project_name}-encoder:latest"
+    wandb_encoder = f"laurent4ml/model-registry/{project_name}-encoder:v0"
     artifact_encoder = run.use_artifact(wandb_encoder, type="model")
     encoder_path = artifact_encoder.file()
     logger.info(f"main - encoder_path: {encoder_path}")

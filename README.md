@@ -17,11 +17,9 @@ This multiple step project is using python version 3.8.17 and the librairies in 
 ## Using CLI
 Running all steps using mlflow
 ```
-# prepare dataset, track and split dataset, test data and model, train model
+# prepare dataset, track and split dataset, test data and model,
+# train and evaluate model
 mlflow run src
-
-# evaluate model
-python src/evaluate_model.py --artifact_root="census"
 
 # install app
 uvicorn main:app --reload
@@ -81,11 +79,10 @@ Steps Performed:
 - upload trained model to wand model registry
 - upload one hot encoder to wandb model registry
 
-
 ## Step 7: Evaluate Model
 evaluate model
 ```
-python src/evaluate_model.py --artifact_root="census" --project_name="census-classification" --model_file="lr_model_5.joblib"
+mlflow run src -P steps=model_evaluate
 ```
 This step returns metrics about the model performances like
 ```
