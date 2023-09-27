@@ -39,3 +39,9 @@ The model is trained on the UCI Census Income Dataset. (https://archive.ics.uci.
 
 ## Caveats and Recommendations
 The data contains biases and should be considered only for training purposes.
+
+## Ethical Considerations
+The model is not balanced properly. For example, the race feature contains biases as seen in the screenshot below. The "Amer-Indian-Eskimo" class is trained on only 54 records, "Other" class is trained on 40 rrecords and "Asian-Pac-Islander" on 187.
+Again this is a sample dataset that should be considered only for training purposes.
+
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/race.png?raw=true)

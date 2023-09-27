@@ -82,7 +82,7 @@ Steps Performed:
 ## Step 7: Evaluate Model
 evaluate model
 ```
-mlflow run src -P steps=model_evaluate
+mlflow run src -P steps=model_evaluation
 ```
 This step returns metrics about the model performances like
 ```
@@ -91,7 +91,7 @@ precision: 0.7571884984025559
 recall: 0.6196078431372549
 fbeta: 0.6815240833932422
 ```
-but also performance on specific data slice like "edication"
+but also performance on specific data slice like "education"
 ```
 education - Prof-school - {'precision': 0.8285714285714286, 'recall': 0.8285714285714286, 'f1': 0.8285714285714286}
 education - HS-grad - {'precision': 0.8655086848635236, 'recall': 0.8655086848635236, 'f1': 0.8655086848635236}
