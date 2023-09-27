@@ -197,6 +197,10 @@ result:
 200
 {'results': '<50K'}
 ```
+
+Screenshot showing the result of the inference script
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/live_post.png?raw=true)
+
 # API Documentation
 The API has two endpoints:
 - GET /
