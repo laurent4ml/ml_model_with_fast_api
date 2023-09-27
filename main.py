@@ -203,7 +203,7 @@ async def say_hello():
 @app.post("/predict/")
 async def _predict(input: Inference):
     project_name = api_config.main.project_name
-
+    logger.info("Processing predict endpoint: %s" % project_name)
     run = wandb.init(project=project_name, job_type="inference")
 
     X = pd.DataFrame(
