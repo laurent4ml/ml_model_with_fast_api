@@ -197,3 +197,12 @@ result:
 200
 {'results': '<50K'}
 ```
+# API Documentation
+The API has two endpoints:
+- GET /
+- POST /predict
+
+The responses are showed in the screenshots below.
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/docs_live_get.png?raw=true)
+
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/docs_live_post.png?raw=true)
