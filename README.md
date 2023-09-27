@@ -202,7 +202,7 @@ Screenshot showing the result of the inference script
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/live_post.png?raw=true)
 
 # API Documentation
-The API has two endpoints:
+The API is built on Render.com and has two endpoints:
 - GET /
 - POST /predict
 
@@ -210,3 +210,26 @@ The responses are showed in the screenshots below.
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/docs_live_get.png?raw=true)
 
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/docs_live_post.png?raw=true)
+
+Screenshot showing the response from the GEt endpoint in a browser window.
+
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/live_get.png?raw=true)
+
+# Continuous Deployment and Github Actions
+The CICD system is setup on Render.com and uses github actions.
+One action, python-app.yml will run tests using Pytest.
+And if successful will deploy the code to Renders using a secret webhook.
+```
+name: Deploy
+      # Only run this step if the branch is main
+      if: github.ref == 'refs/heads/main'
+      env:
+        deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      run: |
+        curl "$deploy_url"
+```
+This removes the need to set the deployment to be automatic on Render.com as showed in the screenshots below. This is a more flexible continuous deployment solution since only the action we want to succeed actually deploys the code if all steps are successfull.
+
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/continuous_deployment.png?raw=true)
+
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/continuous_deployment_2.png?raw=true)
