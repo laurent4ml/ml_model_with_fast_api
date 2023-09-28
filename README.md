@@ -237,8 +237,7 @@ This removes the need to set the deployment to be automatic on Render.com as sho
 Screenshoot showing continuous deployment pipeline in Github.
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/github_continuous_deployment.png?raw=true)
 
-Screenshots showing pytest action results:
-![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/github_action_pytest.png?raw=true)
+Screenshots showing github action results:
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/github_action.png?raw=true)
 
-Screenshoot showing continuous deployment pipeline in Github.
-![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/github_action_pytest_2.png?raw=true)
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/github_action_python_app.png?raw=true)
