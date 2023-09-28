@@ -211,7 +211,7 @@ The responses are showed in the screenshots below.
 
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/docs_live_post.png?raw=true)
 
-Screenshot showing the response from the GEt endpoint in a browser window.
+Screenshot showing the response from the GET endpoint in a browser window.
 
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/live_get.png?raw=true)
 
