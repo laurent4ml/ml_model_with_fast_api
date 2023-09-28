@@ -74,7 +74,8 @@ def process_data(
     else:
         # encoder.transform
         # Input: Xarray-like of shape (n_samples, n_features)
-        # Output: X_out{ndarray, sparse matrix} of shape (n_samples, n_encoded_features)
+        # Output: X_out{ndarray, sparse matrix} of shape (n_samples,
+        # n_encoded_features)
         x_categorical = encoder.transform(x_categorical)
         try:
             y = label_binarizer.transform(y.values).ravel()

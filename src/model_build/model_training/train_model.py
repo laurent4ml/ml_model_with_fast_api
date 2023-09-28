@@ -1,3 +1,4 @@
+from src.ml.data import process_data
 import logging
 import pandas as pd
 import wandb
@@ -10,7 +11,6 @@ import sys
 # append the path of the parent directory
 sys.path.append("../../..")
 
-from src.ml.data import process_data
 from src.ml.model import train_model  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")

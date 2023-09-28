@@ -1,3 +1,5 @@
+from src.ml.model import compute_model_metrics, inference
+from src.ml.data import process_data
 import logging
 import numpy as np
 import pandas as pd
@@ -9,8 +11,6 @@ import sys
 
 # append the path of the parent directory
 sys.path.append("../../..")
-from src.ml.data import process_data
-from src.ml.model import compute_model_metrics, inference
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -80,6 +80,7 @@ def get_slice_metrics(
         for slice_name in slices:
             logger.info(f"slice name: {slice_name}")
             mask = dataset[dataset[feature] == slice_name]
+            # logger.info(mask)
             metrics = precision_recall_fscore_support(
                 mask["y_true"], mask["y_preds"], average="micro"
             )
@@ -173,7 +174,7 @@ def run_evaluate_steps(args):
     logger.info(f"Loading Model and running predictions for model: {model_path}")
     preds = inference(model_path, x_test)
 
-    ## evaluate overall model performance
+    # evaluate overall model performance
     logger.info("Evaluating overall model performance")
     precision, recall, fbeta = compute_model_metrics(y_test, preds)
     logger.info(f"precision: {precision}")
@@ -181,7 +182,7 @@ def run_evaluate_steps(args):
     logger.info(f"fbeta: {fbeta}")
     run.log({"precision": precision, "recall": recall, "fbeta": fbeta})
 
-    ## log descriptive stats per slice for the education and age features
+    # log descriptive stats per slice for the education and age features
     stats_features = ("education-num", "age")
     for stats_feature in stats_features:
         logger.info(f"Log descriptive stats for {stats_feature} on slice of data")
@@ -195,12 +196,12 @@ def run_evaluate_steps(args):
             logger.info(f"{mean_key}: {mean}")
             logger.info(f"{stddev_key}: {stddev}")
 
-    ## performance metrics per slice for the categorical features
+    # performance metrics per slice for the categorical features
     logger.info("performance metrics per slice for the categorical features")
     slice_metrics = get_slice_metrics(y_test, preds, test_data, cat_features)
     walkmetrics(slice_metrics, run)
 
-    ## calculate auc
+    # calculate auc
     auc = roc_auc_score(y_test, preds)
     logger.info(f"auc: {auc}")
     run.log({"auc": auc})

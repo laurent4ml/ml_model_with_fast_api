@@ -8,6 +8,8 @@ from main import app
 client = TestClient(app)
 
 # Write tests using the same syntax as with the requests module.
+
+
 def test_api_locally_get_root():
     r = client.get("/")
     assert r.status_code == 200

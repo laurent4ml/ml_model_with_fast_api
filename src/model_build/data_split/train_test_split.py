@@ -45,7 +45,8 @@ def split_dataset(args):
 
     for split, df in splits.items():
 
-        # Make the artifact name from the provided root plus the name of the split
+        # Make the artifact name from the provided root plus the name of the
+        # split
         artifact_name = f"{args.artifact_root}_{split}.csv"
 
         local_directory = os.path.join(args.file_path, "data_split")

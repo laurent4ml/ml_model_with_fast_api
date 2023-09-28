@@ -23,7 +23,8 @@ def test_column_presence_and_type(data):
         "race": pd.api.types.is_string_dtype,
         "sex": pd.api.types.is_string_dtype,
         "capital-gain": pd.api.types.is_integer_dtype,
-        "capital-loss": pd.api.types.is_integer_dtype,  # This is integer, not float as one might expect
+        # This is integer, not float as one might expect
+        "capital-loss": pd.api.types.is_integer_dtype,
         "hours-per-week": pd.api.types.is_integer_dtype,
         "native-country": pd.api.types.is_string_dtype,
     }
