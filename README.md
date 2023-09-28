@@ -215,6 +215,9 @@ Screenshot showing the response from the GET endpoint in a browser window.
 
 ![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/live_get.png?raw=true)
 
+Screenshot showing the POST request using docs. (example.png)
+![alt text](https://github.com/laurent4ml/ml_model_with_fast_api/blob/main/images/example.png?raw=true)
+
 # Continuous Deployment and Github Actions
 The CICD system is setup on Render.com and uses github actions.
 One action, python-app.yml will run tests using Pytest.
