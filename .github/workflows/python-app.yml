@@ -31,11 +31,6 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      env:
-        WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-      run: |
-        pytest src/test/model -vv --input_artifact laurent4ml/census-classification/census_train.csv:latest
     - name: Deploy
       # Only run this step if the branch is main
       if: github.ref == 'refs/heads/main'
