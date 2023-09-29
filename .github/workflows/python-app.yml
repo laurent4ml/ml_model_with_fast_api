@@ -36,6 +36,7 @@ jobs:
         WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
       run: |
         pytest src/test/model -vv --input_artifact laurent4ml/census-classification/census_train.csv:latest
+        pytest test_main.py
     - name: Deploy
       # Only run this step if the branch is main
       if: github.ref == 'refs/heads/main'

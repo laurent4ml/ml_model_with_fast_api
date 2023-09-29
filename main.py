@@ -6,7 +6,7 @@ import logging
 import wandb
 from src.config import api_config
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, Field
 import pandas as pd
 from joblib import load
 from src.ml.model import inference
@@ -178,20 +178,20 @@ class NativeCountryEnum(str, Enum):
 
 # Declare the data object with its components and their type.
 class Inference(BaseModel):
-    age: int = None
-    workclass: str = None
-    fnlwgt: int = None
-    educationnum: int = None
-    education: str = None
-    maritalstatus: str = None
-    occupation: str = None
-    relationship: str = None
-    race: str = None
-    sex: str = None
-    nativecountry: str = None
-    capitalgain: int = None
-    capitalloss: int = None
-    hoursperweek: int = None
+    age: int = Field(examples=[22])
+    workclass: str = Field(examples=["Private"])
+    fnlwgt: int = Field(examples=[0])
+    educationnum: int = Field(examples=[16])
+    education: str = Field(examples=["Doctorate"])
+    maritalstatus: str = Field(examples=["Divorced"])
+    occupation: str = Field(examples=["Exec-managerial"])
+    relationship: str = Field(examples=["Husband"])
+    race: str = Field(examples=["White"])
+    sex: str = Field(examples=["Male"])
+    nativecountry: str = Field(examples=["United-States"])
+    capitalgain: int = Field(examples=[0])
+    capitalloss: int = Field(examples=[10000])
+    hoursperweek: int = Field(examples=[70])
 
 
 # Define a GET on the specified endpoint.
